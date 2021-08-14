@@ -52,9 +52,9 @@ def login():
     encodePsw = strPsw.encode(encoding='utf-8')
     m5encrypt.update(encodePsw)
     psw_md5 = m5encrypt.hexdigest()  # md5加密
-    user = user_service.login(username=username, password=psw_md5)
+    user = user_service.login(username=username, password=psw_md5)#获取登录的用户信息
 
-    if user:
+    if user:#登录信息存在生成token
         payload = {
             'id': user.id,
             'username': username,

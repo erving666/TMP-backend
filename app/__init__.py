@@ -1,7 +1,7 @@
 import db
 import inject
 from flask import Flask
-from app.repositorys import UserRepository
+from app.repositorys.user_repository import UserRepository
 from app.services import UserService
 from config import Config
 
@@ -22,4 +22,6 @@ def create_app():
     inject.configure(config_ioc)
     app = Flask(__name__)
     app.config.from_object(Config)
+    from template import init
+    init(app)
     return app

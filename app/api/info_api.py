@@ -52,26 +52,23 @@ def login():
     encodePsw = strPsw.encode(encoding='utf-8')
     m5encrypt.update(encodePsw)
     psw_md5 = m5encrypt.hexdigest()  # md5加密
-    user = user_service.login(username=username, password=psw_md5)#获取登录的用户信息
+    user = user_service.login(username=username, password=psw_md5)  #获取登录的用户信息
 
-    if user:#登录信息存在生成token
+    if user:  #登录信息存在生成token
         payload = {
             'id': user.id,
             'username': username,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=7)
         }
-        token = jwt.encode(payload=payload, key=current_app.config['SECRET_KEY'], algorithm="HS256")
-        response = {
-            'status': '1',
-            'token': token
-        }
+        token = jwt.encode(payload=payload,
+                           key=current_app.config['SECRET_KEY'],
+                           algorithm="HS256")
+        response = {'status': '1', 'token': token}
         return jsonify(response)
     else:
-        response = {
-            'status': '0',
-            'errmsg': '用户不存在'
-        }
+        response = {'status': '0', 'errmsg': '用户不存在'}
         return jsonify(response)
+
 
 # 用户注册
 # 请求路径: /api/user/test/

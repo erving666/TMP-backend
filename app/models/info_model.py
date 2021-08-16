@@ -1,23 +1,24 @@
 from sqlalchemy import Column
 from sqlalchemy.types import String, Integer
 from app.models import BaseModel
+from app.models import User
 
-
-class User(BaseModel):
-    __tablename__ = "User"
+class Info(BaseModel):
+    __tablename__ = "Info"
+    __table_args__ = {"schema":"hnsd"}
     id = Column(Integer, primary_key=True, autoincrement=True)
-    username = Column(String(100))
-    password = Column(String(100))
+    user_id = Column(Integer, ForeignKey("User.username"))
+    phone = Column(String(100))
 
     def to_json(self):
         return {
             'id': self.id,
-            'login_id': self.username,
-            'password': self.password
+            'user_id': self.user_id,
+            'phone': self.phone
         }
 
     def to_token_json(self):
         return {
             'id': self.id,
-            'username': self.username
+            'user_id': self.user_id
         }

@@ -8,6 +8,7 @@ engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 UserSQL = FSQLALchemyRepository(User, session)
+InfoSQL = FSQLALchemyRepository(User, session)
 
 
 def init_db():

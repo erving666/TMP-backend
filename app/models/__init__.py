@@ -5,3 +5,4 @@ dbmetadata = MetaData()
 BaseModel = declarative_base(metadata=dbmetadata)
 
 from .user_model import User
+from .info_model import Info

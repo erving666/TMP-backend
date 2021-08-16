@@ -2,80 +2,33 @@ from flask import Blueprint
 import datetime
 import inject
 import hashlib
-from app.services import UserService
+from app.services import InfoService
 from flask import jsonify, request
-from app.models import User
+from app.models import User,Info
 import jwt
 from flask import current_app
 from app.api.authenticate_require import login_required
 
-user_service = inject.instance(UserService)
+info_service = inject.instance(InfoService)
 
-# 用户注册
-# 请求路径: /api/user/register/
-# 请求方式: POST
-# 请求参数:username password
+# 个人信息查询
+# 请求路径: /api/info/all
+# 请求方式: GET
 # 返回值: msg
-user = Blueprint('user', __name__)
+info = Blueprint('info', __name__)
 
-
-@user.route('/register/', methods=['POST'])
-def register():
-    username = request.args.get('username')
-    psw = request.args.get('psw')
-
-    strPsw = psw
-
-    m5encrypt = hashlib.md5()
-
-    encodePsw = strPsw.encode(encoding='utf-8')
-    m5encrypt.update(encodePsw)
-
-    psw_md5 = m5encrypt.hexdigest()  # md5加密
-    user = User(username=username, password=psw_md5)  # 创建用户实体
-    user_service.user_persist(entity=user)  # 添加用户到数据库
-    return jsonify(msg="注册成功")
-
-
-# 用户注册
-# 请求路径: /api/user/login/
-# 请求方式: POST
-# 请求参数:username psw
-# 返回值: {'status':'1','token':token}
-#        {'status':'0','errmsg':'用户不存在'}
-@user.route('/login/', methods=['POST'])
-def login():
-    username = request.args.get('username')
-    psw = request.args.get('psw')
-    strPsw = psw
-    m5encrypt = hashlib.md5()
-    encodePsw = strPsw.encode(encoding='utf-8')
-    m5encrypt.update(encodePsw)
-    psw_md5 = m5encrypt.hexdigest()  # md5加密
-    user = user_service.login(username=username, password=psw_md5)  #获取登录的用户信息
-
-    if user:  #登录信息存在生成token
-        payload = {
-            'id': user.id,
-            'username': username,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=7)
-        }
-        token = jwt.encode(payload=payload,
-                           key=current_app.config['SECRET_KEY'],
-                           algorithm="HS256")
-        response = {'status': '1', 'token': token}
-        return jsonify(response)
-    else:
-        response = {'status': '0', 'errmsg': '用户不存在'}
-        return jsonify(response)
-
-
-# 用户注册
-# 请求路径: /api/user/test/
-# 请求方式: POST GET
-# 请求参数:请求头的Authorization
-# 返回值: {'id':user.id,'username':user.username}
-@user.route('/test', methods=['POST', 'GET'])  # 测试登录验证的装饰器
+@info.route('/info/all', methods=['GET'])
 @login_required
-def test(user):
-    return jsonify(user.to_token_json())
+def get_info():
+    phone = request.args.get('phone')
+    user = info_service.info_persist(phone)  #获取登录的用户信息
+
+
+# 个人信息修改
+# 请求路径: /api/info/<user_id>
+# 请求方式: POST
+# 返回值: 200
+@info.route('/info/<user_id>', methods=['POST'])
+@login_required
+def modify_info(user_id):
+    pass

@@ -12,7 +12,7 @@ from app.api.authenticate_require import login_required
 user_service = inject.instance(UserService)
 
 # 用户注册
-# 请求路径: /api/user/register/
+# 请求路径: /user/register/
 # 请求方式: POST
 # 请求参数:username password
 # 返回值: msg
@@ -38,29 +38,30 @@ def register():
 
 
 # 用户注册
-# 请求路径: /api/user/login/
+# 请求路径: /user/login/
 # 请求方式: POST
-# 请求参数:username psw
+# 请求参数:username password
 # 返回值: {'status':'1','token':token}
 #        {'status':'0','errmsg':'用户不存在'}
 @user.route('/login/', methods=['POST'])
 def login():
     username = request.args.get('username')
-    psw = request.args.get('psw')
+    psw = request.args.get('password')
     strPsw = psw
     m5encrypt = hashlib.md5()
     encodePsw = strPsw.encode(encoding='utf-8')
     m5encrypt.update(encodePsw)
     psw_md5 = m5encrypt.hexdigest()  # md5加密
-    user = user_service.login(username=username, password=psw_md5)#获取登录的用户信息
+    user = user_service.login(username=username, password=psw_md5)  # 获取登录的用户信息
 
-    if user:#登录信息存在生成token
+    if user:  # 登录信息存在生成token
         payload = {
             'id': user.id,
             'username': username,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=7)
         }
-        token = jwt.encode(payload=payload, key=current_app.config['SECRET_KEY'], algorithm="HS256")
+        token = jwt.encode(
+            payload=payload, key=current_app.config['SECRET_KEY'], algorithm="HS256")
         response = {
             'status': '1',
             'token': token
@@ -74,11 +75,18 @@ def login():
         return jsonify(response)
 
 # 用户注册
-# 请求路径: /api/user/test/
+# 请求路径: /user/test/
 # 请求方式: POST GET
 # 请求参数:请求头的Authorization
 # 返回值: {'id':user.id,'username':user.username}
+
+
 @user.route('/test', methods=['POST', 'GET'])  # 测试登录验证的装饰器
 @login_required
 def test(user):
     return jsonify(user.to_token_json())
+
+@user.route('/fuck/',methods=['GET'])
+# @login_required
+def fuck():
+    return {'test':'teste'}

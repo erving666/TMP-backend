@@ -12,7 +12,7 @@ from app.api.authenticate_require import login_required
 info_service = inject.instance(InfoService)
 
 # 个人信息查询
-# 请求路径: /api/info/all
+# 请求路径: /info/all
 # 请求方式: GET
 # 返回值: msg
 info = Blueprint('info', __name__)
@@ -25,7 +25,7 @@ def get_info():
 
 
 # 个人信息修改
-# 请求路径: /api/info/<user_id>
+# 请求路径: /info/<user_id>
 # 请求方式: POST
 # 返回值: 200
 @info.route('/info/<user_id>', methods=['POST'])
